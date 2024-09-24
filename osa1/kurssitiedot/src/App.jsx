@@ -1,36 +1,47 @@
 
 const App = () => {
-  const course = 'Half Stack application development'
-  const part1 = 'Fundamentals of React'
-  const exercises1 = 10
-  const part2 = 'Using props to pass data'
-  const exercises2 = 7
-  const part3 = 'State of a component'
-  const exercises3 = 14
+  const course = {
+    name: 'Half Stack application development',
+    parts: [
+    {
+      name: 'Fundamentals of React',
+      exercises: 10
+    },
+    {
+      name: 'Using props to pass data',
+      exercises: 7
+    },{
+      name: 'State of a component',
+      exercises: 14
+    }
+  ]
+}
 
   return (
     <div>
-      <Header kurssi={course}/>
-      <Content osa1={part1} harj1={exercises1} osa2={part2} harj2={exercises2} osa3={part3} harj3={exercises3}/>
-      <Total harj1={exercises1} harj2={exercises2} harj3={exercises3}/>
+      <Header course={course.name}/>
+      <Content parts={course.parts}/>
+      <Total parts={course.parts}/>        
     </div>
   )
 }
 
 const Header = (props) => {
+  console.log(props)
   return (
     <div>
-      <h1>{props.kurssi}</h1>
+      <h1>{props.course}</h1>
     </div>
   )
 }
 
 const Content = (props) => {
+  console.log("content-propsit", props)
   return (
   <div>
-    <Part osa={props.osa1} harj={props.harj1}/>
-    <Part osa={props.osa2} harj={props.harj2}/>
-    <Part osa={props.osa3} harj={props.harj3}/>
+    <Part part={props.parts[0].name} exercises={props.parts[0].exercises}/>
+    <Part part={props.parts[1].name} exercises={props.parts[1].exercises}/>
+    <Part part={props.parts[2].name} exercises={props.parts[2].exercises}/>
   </div>
   )
 }
@@ -38,7 +49,7 @@ const Content = (props) => {
 const Total = (props) => {
   return (
     <div>
-      <p>Number of exercises {props.harj1 + props.harj2 + props.harj3}</p>
+      <p>Number of exercises {props.parts[0].exercises + props.parts[1].exercises + props.parts[2].exercises}</p>
     </div>
   )
 }
@@ -46,7 +57,7 @@ const Total = (props) => {
 const Part = (props) => {
   return (
     <div>
-      <p>{props.osa} {props.harj}</p>
+      <p>{props.part} {props.exercises}</p>
     </div>
   )
 }
