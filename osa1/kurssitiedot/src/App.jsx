@@ -10,7 +10,8 @@ const App = () => {
     {
       name: 'Using props to pass data',
       exercises: 7
-    },{
+    },
+    {
       name: 'State of a component',
       exercises: 14
     }
