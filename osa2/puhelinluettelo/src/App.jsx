@@ -33,9 +33,16 @@ const App = () => {
     const names = persons.map(person => person.name)
 
     if (names.includes(newName)) {
-      window.alert(`${newName} is already added to the phonebook`)
+      if (!window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)) {
+        console.log("cancelling")
+        return
+      }
+
+      updateNumber()
       return
     }
+
+    console.log("creating a new person")
 
     const newPerson = {
       name: newName,
@@ -53,16 +60,29 @@ const App = () => {
       })
   }
 
+  const updateNumber = () => {
+    console.log("updating")
+    const personToUpdate = persons.find(person => person.name === newName)
+    const idToUpdate = personToUpdate.id
+    const updatedPerson = {...personToUpdate, number: newNumber}
+
+    personService
+      .update(idToUpdate, updatedPerson)
+      .then(returnedUpdatedPerson => {
+        setPersons(persons.map(person => person.id !== idToUpdate ? person : returnedUpdatedPerson))
+      })
+  }
+
   const deletePerson = (event) => {
     const idToRemove = event.target.dataset.id
     const personToRemove = persons.find(person => person.id === idToRemove)
 
     if (!window.confirm(`Delete ${personToRemove.name}?`)) {
-      console.log("cancelling")
+      //console.log("cancelling")
       return
     }
 
-    console.log("deleting")
+    //console.log("deleting")
 
     personService
       .remove(idToRemove)
