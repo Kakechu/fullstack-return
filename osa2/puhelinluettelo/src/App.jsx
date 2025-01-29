@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import Notification from './components/Notification'
 import personService from './services/persons'
 
 
@@ -15,6 +15,8 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
 
   const [newFilter, setNewFilter] = useState('')
+
+  const [notificationMessage, setNotificationMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -55,6 +57,7 @@ const App = () => {
         console.log(newPerson)
         console.log(returnedPerson)
         setPersons(persons.concat(returnedPerson))
+        showNotification(`Added ${newPerson.name}`, "success")
         setNewName('')
         setNewNumber('')
       })
@@ -70,6 +73,11 @@ const App = () => {
       .update(idToUpdate, updatedPerson)
       .then(returnedUpdatedPerson => {
         setPersons(persons.map(person => person.id !== idToUpdate ? person : returnedUpdatedPerson))
+        showNotification(`Updated ${updatedPerson.name}`, "success")
+      })
+      .catch(error => {
+        console.log("fail", error)
+        showNotification(`Information of ${personToUpdate.name} has already been removed from server`, "error")
       })
   }
 
@@ -89,8 +97,16 @@ const App = () => {
       .then((deletedPerson) =>  {
         console.log("Deleted:", deletedPerson)
         setPersons(persons.filter(person => person.id !== idToRemove))
-
+        showNotification(`Deleted ${deletedPerson.name}`, "success")
       })
+  }
+
+  const showNotification = (message, type) => {
+    //setNotificationMessage(message)
+    setNotificationMessage({ text: message, type: type })
+    setTimeout(() => {
+      setNotificationMessage(null)
+    }, 5000)
   }
 
   
@@ -113,6 +129,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationMessage}/>
 
       <Filter value={newFilter} onChange={handleFilterChange}/>
       
