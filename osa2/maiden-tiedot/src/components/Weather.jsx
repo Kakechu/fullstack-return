@@ -13,7 +13,7 @@ const Weather = ({city, lat, lng}) => {
             return null
         }
         
-        const apiKey = import.meta.env.VITE_SOME_KEY
+        const apiKey = import.meta.env.VITE_WEATHER_API_KEY
 
         const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${apiKey}&units=metric`
         console.log(url)
