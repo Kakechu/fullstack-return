@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-//const apiKEY = '0bf36fb5ba7f131ca40dc72346f90bbe'
+
 
 const Weather = ({city, lat, lng}) => {
 
