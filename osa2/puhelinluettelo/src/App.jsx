@@ -91,13 +91,12 @@ const App = () => {
     }
 
     //console.log("deleting")
-
+  
     personService
       .remove(idToRemove)
-      .then((deletedPerson) =>  {
-        console.log("Deleted:", deletedPerson)
+      .then(() =>  {
         setPersons(persons.filter(person => person.id !== idToRemove))
-        showNotification(`Deleted ${deletedPerson.name}`, "success")
+        showNotification(`Deleted ${personToRemove.name}`, "success")
       })
   }
 
