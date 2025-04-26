@@ -61,6 +61,10 @@ const App = () => {
         setNewName('')
         setNewNumber('')
       })
+      .catch(error => {
+        console.log(error.response.data)
+        showNotification(`${error.response.data.error}`, "error")
+      })
   }
 
   const updateNumber = () => {
