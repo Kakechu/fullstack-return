@@ -20,9 +20,6 @@ const favoriteBlog = (blogs) => {
 }
 
 const mostBlogs = (blogs) => {
-    // Pitää laskea, millä kirjailijalla on eniten blogeja
-    // Eli minkä kirjailijan nimi esiintyy listassa useimmiten
-    // talteen siis myös tuo blogien määrä
     const names = blogs.map(blog => blog.author)
 
     const frequencyMap = names.reduce((acc, name) => {
@@ -47,6 +44,35 @@ const mostBlogs = (blogs) => {
     return result
 }
 
+const mostLikes = (blogs) => {
+    // Funktio selvittää kirjoittajan, jonka blogeilla on eniten tykkäyksiä.
+    const names = blogs.map(blog => blog.author)
+
+    const likesMap = blogs.reduce((sum, blog) => {
+        sum[blog.author] = (sum[blog.author] || 0) + blog.likes
+        return sum
+    }, {})
+
+    let maxLikes = 0
+    let mostLiked = ""
+
+    for (const [name, likes] of Object.entries(likesMap)) {
+        if (likes > maxLikes) {
+            maxLikes = likes
+            mostLiked = name
+        }
+    }
+
+    const result = {
+        "author": mostLiked,
+        "likes" : maxLikes
+    }
+
+    return result
+}
+
+
+
 module.exports = {
-    dummy, totalLikes, favoriteBlog, mostBlogs
+    dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes
 }
