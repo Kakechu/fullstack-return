@@ -71,6 +71,39 @@ test('if no likes are given, the returned value is 0', async () => {
     assert.strictEqual(latestAdded.likes, 0)
 })
 
+test('fails with status code 400 if title is missing', async () => {
+    const missingTitle = {
+        author: "Missing Title Author",
+        url: "www.example.com",
+        likes: 1
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(missingTitle)
+      .expect(400)
+
+      const blogsAtEnd = await helper.blogsInDb()
+      assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+})
+
+test('fails with status code 400 if url is missing', async () => {
+    const missingUrl = {
+        title: "Missing Url Title",
+        author: "Missing Url Author",
+        likes: 1
+    }
+
+    await api
+    .post('/api/blogs')
+    .send(missingUrl)
+    .expect(400)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+
+})
+
 
 after(async () => {
   await mongoose.connection.close()
