@@ -25,6 +25,32 @@ test('returned blog objects do not contain _id field', async () => {
     assert.strictEqual(containsId, false)
 })
 
+test('a valid blog can be added', async () => {
+    const newBlog = {
+      title: "Added title",
+      author: "Added author",
+      url: "www.example.com",
+      likes: 5
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const blogsAtEnd = await helper.blogsInDb()
+
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+
+    const latestAdded = blogsAtEnd[blogsAtEnd.length - 1]
+
+    assert.strictEqual(newBlog.title, latestAdded.title)
+    assert.strictEqual(newBlog.author, latestAdded.author)
+    assert.strictEqual(newBlog.url, latestAdded.url)
+    assert.strictEqual(newBlog.likes, latestAdded.likes)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
