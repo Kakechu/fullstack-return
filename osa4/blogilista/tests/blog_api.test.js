@@ -183,9 +183,8 @@ describe('when there is initially one user at db', () => {
       assert(usernames.includes(newUser.username))
     })
 
-    test('creation fails with proper statuscode and message if username already taken', async () => { //fails
+    test('creation fails with proper statuscode and message if username already taken', async () => {
         const usersAtStart = await helper.usersInDb()
-        console.log("at start:", usersAtStart)
     
         const newUser = {
           username: 'root',
@@ -201,9 +200,71 @@ describe('when there is initially one user at db', () => {
     
         const usersAtEnd = await helper.usersInDb()
         assert(result.body.error.includes('expected `username` to be unique'))
-        console.log("at the end: ", usersAtEnd)
         assert.strictEqual(usersAtEnd.length, usersAtStart.length)
     })
+
+})
+
+describe('username and password validation', async () => {
+    test('creation fails with proper statuscode if username is too short', async () => {
+        const usersAtStart = await helper.usersInDb()
+
+        const newUser = {
+          username: 'un',
+          name: 'Username Too Short',
+          password: 'secret'
+        }
+
+        const result = await api
+          .post('/api/users')
+          .send(newUser)
+          .expect(400)
+          .expect('Content-Type', /application\/json/)
+
+        const usersAtEnd = await helper.usersInDb()
+        assert(result.body.error.includes('is shorter than the minimum allowed length'))
+        assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+    })
+
+    test('creation fails with proper statuscode if password is too short', async () => {
+        const usersAtStart = await helper.usersInDb()
+
+        const newUser = {
+          username: 'User',
+          name: 'Password Too Short',
+          password: 'pw'
+        }
+
+        const result = await api
+          .post('/api/users')
+          .send(newUser)
+          .expect(400)
+          .expect('Content-Type', /application\/json/)
+
+        const usersAtEnd = await helper.usersInDb()
+        assert(result.body.error.includes('invalid password'))
+        assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+    })
+
+    test('creation fails with proper statuscode if no password is given', async () => {
+        const usersAtStart = await helper.usersInDb()
+
+        const newUser = {
+          username: 'User',
+          name: 'No Password'
+        }
+
+        const result = await api
+          .post('/api/users')
+          .send(newUser)
+          .expect(400)
+          .expect('Content-Type', /application\/json/)
+
+        const usersAtEnd = await helper.usersInDb()
+        assert(result.body.error.includes('invalid password'))
+        assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+    })
+
 })
 
 after(async () => {
