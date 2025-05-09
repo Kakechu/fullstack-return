@@ -203,6 +203,31 @@ describe('when there is initially one user at db', () => {
         assert.strictEqual(usersAtEnd.length, usersAtStart.length)
     })
 
+    test('creation of a blog succeeds with status code 201', async () => { // JATKA TÄSTÄ
+        const blogsAtStart = await helper.blogsInDb()
+    
+        const user = await User.findOne()
+        console.log("USER", user)
+    
+        const blog = {
+          title: "API test blog",
+          author: "API test author",
+          url: "www.example.com",
+          likes: "2",
+          user: user._id
+        }
+    
+        const result = await api
+          .post('/api/blogs')
+          .send(blog)
+          .expect(201)
+          .expect('Content-Type', /application\/json/)
+
+        const blogsAtEnd = await helper.blogsInDb()
+        assert.strictEqual(blogsAtStart.length+1, blogsAtEnd.length)
+
+    })
+
 })
 
 describe('username and password validation', async () => {
@@ -264,8 +289,11 @@ describe('username and password validation', async () => {
         assert(result.body.error.includes('invalid password'))
         assert.strictEqual(usersAtEnd.length, usersAtStart.length)
     })
-
 })
+
+
+
+
 
 after(async () => {
   await mongoose.connection.close()
