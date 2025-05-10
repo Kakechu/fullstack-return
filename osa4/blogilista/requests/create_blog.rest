@@ -3,7 +3,7 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Iktha2VjaHUiLCJpZCI6IjY4MWU0NDc1MGE4MzBkYzI4OTkyMGZmMiIsImlhdCI6MTc0Njg2OTg4MH0.qcoJeN2cwd-fV2tyr8cImyzkSnfpEplCrEwe8xCz_5M
 
 {
-    "title": "Task Title",
+    "title": "To Delete Title",
     "author": "Another Blog Author",
     "url": "www.example.com",
     "likes": 1
