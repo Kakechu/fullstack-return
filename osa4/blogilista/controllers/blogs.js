@@ -26,8 +26,10 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
   })
 
 
-  if (!blog.title || !blog.url) {
-    return response.status(400).json()
+  if (!blog.title) {
+    return response.status(400).json({ error: "title missing" })
+  } else if (!blog.url) {
+    return response.status(400).json({ error: "url missing" })
   }
 
   const savedBlog = await blog.save()
@@ -51,8 +53,10 @@ blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) =
 
 })
 
-blogsRouter.put('/:id', async (request, response, next) => {
+blogsRouter.put('/:id', middleware.userExtractor, async (request, response, next) => {
   const body = request.body
+
+  const user = request.user
 
   const blog = {
     title: body.title,
