@@ -9,7 +9,6 @@ const filterSlice = createSlice({
           const filter = action.payload
           return filter
         }
-
     }
 })
 
