@@ -1,7 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getAnecdotes, createAnecdote } from '../requests'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { createAnecdote } from '../requests'
+import { useNotificationDispatch } from '../NotificationContext'
 
 const AnecdoteForm = () => {
+  const dispatch = useNotificationDispatch()
   const queryClient = useQueryClient()
 
   const newAnecdoteMutation = useMutation({
@@ -9,6 +11,17 @@ const AnecdoteForm = () => {
     onSuccess: (newAnecdote) => {
       const anecdotes = queryClient.getQueryData(['anecdotes'])
       queryClient.setQueryData(['anecdotes'], anecdotes.concat(newAnecdote))
+      dispatch({ type: 'NOTIFICATION', payload: `you added ${newAnecdote.content}`})
+      setTimeout(() => {
+        dispatch({ type: 'NOTIFICATION', payload: '' })
+      }, 5000)
+    },
+    onError: () => {
+      console.log("virhe")
+      dispatch({ type: 'NOTIFICATION', payload: 'too short anecdote, must have length 5 or more'})
+      setTimeout(() => {
+        dispatch({ type: 'NOTIFICATION', payload: '' })
+      }, 5000)
     }
   })
 
