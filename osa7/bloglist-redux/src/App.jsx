@@ -6,13 +6,16 @@ import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 
+import { useDispatch } from 'react-redux'
+import { setNotification } from './reducers/notificationReducer'
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
-  const [notificationMessage, setNotificationMessage] = useState(null)
+  const dispatch = useDispatch()
 
   const blogFormRef = useRef()
 
@@ -41,9 +44,11 @@ const App = () => {
       }
 
       setBlogs(blogs.concat(returnedBlogWithUser))
-      showNotification(
-        `a new blog ${blogObject.title} by ${blogObject.author} added`,
-        'success',
+      dispatch(
+        setNotification({
+          text: `a new blog ${blogObject.title} by ${blogObject.author} added`,
+          type: 'success',
+        }),
       )
     } catch (exception) {
       console.log('error creating blog', exception)
@@ -71,10 +76,20 @@ const App = () => {
     try {
       await blogService.removeBlog(blog.id)
       setBlogs(blogs.filter((b) => b.id !== blog.id))
-      showNotification(`blog ${blog.title} removed`, 'success')
+      dispatch(
+        setNotification({
+          text: `blog ${blog.title} removed`,
+          type: 'success',
+        }),
+      )
     } catch (exception) {
       console.log('error in deletion', exception)
-      showNotification(`cannot remove blog ${blog.title} `, 'error')
+      dispatch(
+        setNotification({
+          text: `cannot remove blog ${blog.title} `,
+          type: 'error',
+        }),
+      )
     }
   }
 
@@ -94,20 +109,15 @@ const App = () => {
       setPassword('')
     } catch (exception) {
       console.log('wrong credentials')
-      showNotification('wrong username or password', 'error')
+      dispatch(
+        setNotification({ text: 'wrong username or password', type: 'error' }),
+      )
     }
   }
 
   const handleLogOut = async (event) => {
     setUser(null)
     window.localStorage.removeItem('loggedBlogappUser')
-  }
-
-  const showNotification = (message, type) => {
-    setNotificationMessage({ text: message, type: type })
-    setTimeout(() => {
-      setNotificationMessage(null)
-    }, 4000)
   }
 
   const sortedBlogs = [...blogs].sort(function (a, b) {
@@ -117,7 +127,7 @@ const App = () => {
   const loginForm = () => (
     <div>
       <h2>Log in to application</h2>
-      <Notification message={notificationMessage} />
+      <Notification />
       <form onSubmit={handleLogin}>
         <div>
           username
@@ -151,7 +161,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Notification message={notificationMessage} />
+      <Notification />
       <p>
         {user.name} logged in <button onClick={handleLogOut}>logout</button>
       </p>
