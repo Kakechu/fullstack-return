@@ -6,11 +6,12 @@ import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
+import { initializeBlogs, appendBlog } from './reducers/blogReducer'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  //const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -19,8 +20,10 @@ const App = () => {
 
   const blogFormRef = useRef()
 
+  const blogs = useSelector((state) => state.blogs)
+
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
+    dispatch(initializeBlogs())
   }, [])
 
   useEffect(() => {
@@ -43,7 +46,7 @@ const App = () => {
         user: user,
       }
 
-      setBlogs(blogs.concat(returnedBlogWithUser))
+      dispatch(appendBlog(returnedBlogWithUser))
       dispatch(
         setNotification({
           text: `a new blog ${blogObject.title} by ${blogObject.author} added`,
@@ -75,7 +78,7 @@ const App = () => {
   const handleRemove = async (blog) => {
     try {
       await blogService.removeBlog(blog.id)
-      setBlogs(blogs.filter((b) => b.id !== blog.id))
+      dispatch(setBlogs(blogs.filter((b) => b.id !== blog.id)))
       dispatch(
         setNotification({
           text: `blog ${blog.title} removed`,
