@@ -8,19 +8,24 @@ import Togglable from './components/Togglable'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
-import { initializeBlogs, appendBlog } from './reducers/blogReducer'
+import {
+  initializeBlogs,
+  appendBlog,
+  updateBlog,
+  setBlogs,
+} from './reducers/blogReducer'
+import { setUser } from './reducers/userReducer'
 
 const App = () => {
-  //const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
 
   const dispatch = useDispatch()
 
   const blogFormRef = useRef()
 
   const blogs = useSelector((state) => state.blogs)
+  const user = useSelector((state) => state.user)
 
   useEffect(() => {
     dispatch(initializeBlogs())
@@ -30,7 +35,7 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      dispatch(setUser(user))
       blogService.setToken(user.token)
     }
   }, [])
@@ -68,8 +73,7 @@ const App = () => {
         ...returnedBlog,
         user: original.user,
       }
-
-      setBlogs(blogs.map((b) => (b.id !== blogId ? b : blogWithUser)))
+      dispatch(updateBlog(blogWithUser))
     } catch (exception) {
       console.log('error liking', exception)
     }
@@ -107,7 +111,7 @@ const App = () => {
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
 
       blogService.setToken(user.token)
-      setUser(user)
+      dispatch(setUser(user))
       setUsername('')
       setPassword('')
     } catch (exception) {
@@ -119,7 +123,7 @@ const App = () => {
   }
 
   const handleLogOut = async (event) => {
-    setUser(null)
+    dispatch(setUser(null))
     window.localStorage.removeItem('loggedBlogappUser')
   }
 
