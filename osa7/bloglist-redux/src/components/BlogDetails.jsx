@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import blogService from '../services/blogs'
 import { setBlogs, updateBlog, addCommentAsync } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
+import { Button, Box, TextField, List, ListItem } from '@mui/material'
 
 const BlogDetails = () => {
   const { id } = useParams()
@@ -70,9 +71,14 @@ const BlogDetails = () => {
 
   const removeButton = () => (
     <div>
-      <button style={{ backgroundColor: '#24A0ED' }} onClick={() => onRemove()}>
+      <Button
+        size="small"
+        sx={{ marginTop: 2 }}
+        variant="contained"
+        onClick={() => onRemove()}
+      >
         remove
-      </button>
+      </Button>
     </div>
   )
 
@@ -82,10 +88,17 @@ const BlogDetails = () => {
         {blog.title} {blog.author}
       </h1>
       <a href={blog.url}>{blog.url}</a>
-      <div>
+      <Box>
         likes {blog.likes}
-        <button onClick={() => onLike()}>like</button>
-      </div>
+        <Button
+          size="small"
+          sx={{ margin: 2 }}
+          color="primary"
+          onClick={() => onLike()}
+        >
+          like
+        </Button>
+      </Box>
       <div>added by {blog.user.name}</div>
     </div>
   )
@@ -94,14 +107,14 @@ const BlogDetails = () => {
     <div>
       <h2>comments</h2>
       <form onSubmit={addComment}>
-        <input name="comment" />
-        <button type="submit">add comment</button>
+        <TextField name="comment" label="comment" size="small" />
+        <Button type="submit">add comment</Button>
       </form>
-      <ul>
+      <List>
         {comments.map((comment, index) => (
-          <li key={index}>{comment}</li>
+          <ListItem key={index}>{comment}</ListItem>
         ))}
-      </ul>
+      </List>
     </div>
   )
 

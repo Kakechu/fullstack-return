@@ -7,6 +7,8 @@ import { setNotification } from '../reducers/notificationReducer'
 
 import Notification from './Notification'
 
+import { TextField, Button } from '@mui/material'
+
 const LoginForm = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -39,9 +41,11 @@ const LoginForm = () => {
       <Notification />
       <form onSubmit={handleLogin}>
         <div>
-          username
-          <input
+          <TextField
+            size="small"
             data-testid="username"
+            id="outlined-required"
+            label="username"
             type="text"
             value={username}
             name="Username"
@@ -49,16 +53,25 @@ const LoginForm = () => {
           />
         </div>
         <div>
-          password
-          <input
+          <TextField
+            size="small"
             data-testid="password"
+            label="password"
             type="password"
             value={password}
             name="Password"
             onChange={({ target }) => setPassword(target.value)}
           />
         </div>
-        <button type="submit">login</button>
+        <Button
+          size="small"
+          sx={{ marginTop: 2 }}
+          variant="contained"
+          color="primary"
+          type="submit"
+        >
+          login
+        </Button>
       </form>
     </div>
   )

@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { List, ListItem } from '@mui/material'
 
 const User = () => {
   const { id } = useParams()
@@ -13,11 +14,11 @@ const User = () => {
     <div>
       <h1>{user.name}</h1>
       <h2>added blogs</h2>
-      <ul>
+      <List>
         {user.blogs.map((blog) => (
-          <li key={blog.id}>{blog.title}</li>
+          <ListItem key={blog.id}>{blog.title}</ListItem>
         ))}
-      </ul>
+      </List>
     </div>
   )
 }

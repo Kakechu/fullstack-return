@@ -18,7 +18,21 @@ import { setUser } from './reducers/userReducer'
 
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 
-import { Container } from '@mui/material'
+import {
+  AppBar,
+  Container,
+  Toolbar,
+  IconButton,
+  Button,
+  Box,
+  TableContainer,
+  Table,
+  TableBody,
+  TableRow,
+  TableCell,
+  Typography,
+  Paper,
+} from '@mui/material'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -89,42 +103,55 @@ const App = () => {
     marginBottom: 5,
   }
 
-  const navigationStyle = {
-    padding: 10,
-    backgroundColor: '#D3D8DE',
-    borderWidth: 1,
-    marginBottom: 5,
-  }
-
   const BlogList = () => (
     <div>
-      <h2>blog app</h2>
+      <Typography variant="h4" sx={{ margin: 2 }}>
+        blog app
+      </Typography>
       <Notification />
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
       </Togglable>
-      {sortedBlogs.map((blog) => (
-        <div style={blogStyle} key={blog.id}>
-          <Link to={`/blogs/${blog.id}`}>
-            {blog.title} {blog.author}
-          </Link>
-        </div>
-      ))}
+      <TableContainer component={Paper}>
+        <Table>
+          <TableBody>
+            {sortedBlogs.map((blog) => (
+              <TableRow key={blog.id}>
+                <TableCell>
+                  <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+                </TableCell>
+                <TableCell>{blog.author}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   )
 
   return (
     <Container>
       <Router>
-        <div style={navigationStyle}>
-          <Link style={padding} to="/">
-            blogs
-          </Link>
-          <Link style={padding} to="/users">
-            users
-          </Link>
-          {user.name} logged in <button onClick={handleLogOut}>logout</button>
-        </div>
+        <AppBar position="static" color="primary">
+          <Toolbar>
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+            ></IconButton>
+            <Button color="inherit" component={Link} to="/">
+              blogs
+            </Button>
+            <Button color="inherit" component={Link} to="/users">
+              users
+            </Button>
+            <Box sx={{ flexGrow: 1 }} />
+            <Box sx={{ marginRight: 2 }}>{user.name} logged in</Box>
+            <Button color="inherit" onClick={handleLogOut}>
+              logout
+            </Button>
+          </Toolbar>
+        </AppBar>
 
         <Routes>
           <Route path="/" element={<BlogList />} />
