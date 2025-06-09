@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import blogService from '../services/blogs'
-import { setBlogs, updateBlog } from '../reducers/blogReducer'
+import { setBlogs, updateBlog, addCommentAsync } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
 
 const BlogDetails = () => {
@@ -16,6 +16,7 @@ const BlogDetails = () => {
   if (!blog) {
     return null
   }
+  const comments = blog.comments
 
   const onLike = async () => {
     const newBlog = {
@@ -34,6 +35,13 @@ const BlogDetails = () => {
     } catch (exception) {
       console.log('error liking', exception)
     }
+  }
+
+  const addComment = async (event) => {
+    event.preventDefault()
+    const comment = event.target.comment.value
+    event.target.comment.value = ''
+    dispatch(addCommentAsync(blog.id, comment))
   }
 
   const onRemove = async () => {
@@ -82,16 +90,36 @@ const BlogDetails = () => {
     </div>
   )
 
+  const commentSection = () => (
+    <div>
+      <h2>comments</h2>
+      <form onSubmit={addComment}>
+        <input name="comment" />
+        <button type="submit">add comment</button>
+      </form>
+      <ul>
+        {comments.map((comment, index) => (
+          <li key={index}>{comment}</li>
+        ))}
+      </ul>
+    </div>
+  )
+
   if (user.username === blog.user?.username) {
     return (
       <div className="blog">
         {blogDetails()}
         {removeButton()}
+        {commentSection()}
       </div>
     )
   }
 
-  return <div className="blog">{blogDetails()}</div>
+  return (
+    <div className="blog">
+      {blogDetails()} {commentSection()}
+    </div>
+  )
 }
 
 export default BlogDetails

@@ -13,7 +13,6 @@ const blogSlice = createSlice({
     },
     updateBlog(state, action) {
       const updatedBlog = action.payload
-      console.log(updatedBlog)
       return state.map((b) => (b.id !== updatedBlog.id ? b : updatedBlog))
     },
   },
@@ -30,6 +29,13 @@ export const createBlog = (content) => {
   return async (dispatch) => {
     const newBlog = await blogService.create(content)
     dispatch(appendBlog(newBlog))
+  }
+}
+
+export const addCommentAsync = (id, comment) => {
+  return async (dispatch) => {
+    const updated = await blogService.addComment(id, comment)
+    dispatch(updateBlog(updated))
   }
 }
 
