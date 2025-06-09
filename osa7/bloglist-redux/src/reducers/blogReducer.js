@@ -33,9 +33,15 @@ export const createBlog = (content) => {
 }
 
 export const addCommentAsync = (id, comment) => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     const updated = await blogService.addComment(id, comment)
-    dispatch(updateBlog(updated))
+    const original = getState().blogs.find((b) => b.id === id)
+    console.log('updated after comment:', updated)
+    const updatedWithUser = {
+      ...updated,
+      user: original.user,
+    }
+    dispatch(updateBlog(updatedWithUser))
   }
 }
 
