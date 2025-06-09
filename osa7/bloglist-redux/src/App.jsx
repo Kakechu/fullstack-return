@@ -1,20 +1,21 @@
 import { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
+
 import blogService from './services/blogs'
 import loginService from './services/login'
+
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
+import Users from './components/Users'
+import User from './components/User'
+import BlogDetails from './components/BlogDetails'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
-import {
-  initializeBlogs,
-  appendBlog,
-  updateBlog,
-  setBlogs,
-} from './reducers/blogReducer'
+import { initializeBlogs, appendBlog } from './reducers/blogReducer'
 import { setUser } from './reducers/userReducer'
+
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 
 const App = () => {
   const [username, setUsername] = useState('')
@@ -63,43 +64,6 @@ const App = () => {
     }
   }
 
-  const handleLike = async (blogId, newBlog) => {
-    const original = blogs.find((b) => b.id === blogId)
-
-    try {
-      const returnedBlog = await blogService.update(blogId, newBlog)
-
-      const blogWithUser = {
-        ...returnedBlog,
-        user: original.user,
-      }
-      dispatch(updateBlog(blogWithUser))
-    } catch (exception) {
-      console.log('error liking', exception)
-    }
-  }
-
-  const handleRemove = async (blog) => {
-    try {
-      await blogService.removeBlog(blog.id)
-      dispatch(setBlogs(blogs.filter((b) => b.id !== blog.id)))
-      dispatch(
-        setNotification({
-          text: `blog ${blog.title} removed`,
-          type: 'success',
-        }),
-      )
-    } catch (exception) {
-      console.log('error in deletion', exception)
-      dispatch(
-        setNotification({
-          text: `cannot remove blog ${blog.title} `,
-          type: 'error',
-        }),
-      )
-    }
-  }
-
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
@@ -115,7 +79,6 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      console.log('wrong credentials')
       dispatch(
         setNotification({ text: 'wrong username or password', type: 'error' }),
       )
@@ -165,26 +128,61 @@ const App = () => {
     return loginForm()
   }
 
-  return (
+  const padding = {
+    padding: 5,
+  }
+
+  const blogStyle = {
+    paddingTop: 10,
+    paddingLeft: 2,
+    border: 'solid',
+    borderWidth: 1,
+    marginBottom: 5,
+  }
+
+  const navigationStyle = {
+    padding: 10,
+    backgroundColor: '#D3D8DE',
+    borderWidth: 1,
+    marginBottom: 5,
+  }
+
+  const BlogList = () => (
     <div>
-      <h2>blogs</h2>
+      <h2>blog app</h2>
       <Notification />
-      <p>
-        {user.name} logged in <button onClick={handleLogOut}>logout</button>
-      </p>
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
       </Togglable>
       {sortedBlogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleLike={handleLike}
-          handleRemove={handleRemove}
-          user={user}
-        />
+        <div style={blogStyle} key={blog.id}>
+          <Link to={`/blogs/${blog.id}`}>
+            {blog.title} {blog.author}
+          </Link>
+        </div>
       ))}
     </div>
+  )
+
+  return (
+    <Router>
+      <div style={navigationStyle}>
+        <Link style={padding} to="/">
+          blogs
+        </Link>
+        <Link style={padding} to="/users">
+          users
+        </Link>
+        {user.name} logged in <button onClick={handleLogOut}>logout</button>
+      </div>
+
+      <Routes>
+        <Route path="/" element={<BlogList />} />
+        <Route path="/users" element={<Users />} />
+        <Route path="/users/:id" element={<User />} />
+        <Route path="/blogs/:id" element={<BlogDetails />} />
+      </Routes>
+    </Router>
   )
 }
 
