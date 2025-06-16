@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { gql, useMutation } from '@apollo/client'
-import { ALL_AUTHORS, ALL_BOOKS, CREATE_BOOK } from '../queries'
+import { useMutation } from '@apollo/client'
+import { ALL_AUTHORS, ALL_BOOKS, BOOKS_BY_GENRE, CREATE_BOOK } from '../queries'
 
 const NewBook = (props) => {
   const [title, setTitle] = useState('')
@@ -10,7 +10,17 @@ const NewBook = (props) => {
   const [genres, setGenres] = useState([])
 
   const [createBook] = useMutation(CREATE_BOOK, {
-    refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
+    refetchQueries: [
+      { query: ALL_AUTHORS },
+      { query: ALL_BOOKS },
+      ...genres.map((g) => ({
+        query: BOOKS_BY_GENRE,
+        variables: { genre: g },
+      })),
+    ],
+    onError: (error) => {
+      console.error('CreateBook error:', error.graphQLErrors[0]?.message)
+    },
   })
 
   if (!props.show) {
@@ -19,18 +29,21 @@ const NewBook = (props) => {
 
   const submit = async (event) => {
     event.preventDefault()
+    try {
+      await createBook({
+        variables: { title, published: Number(published), author, genres },
+      })
 
-    createBook({
-      variables: { title, published: Number(published), author, genres },
-    })
+      console.log('add book...')
 
-    console.log('add book...')
-
-    setTitle('')
-    setPublished('')
-    setAuthor('')
-    setGenres([])
-    setGenre('')
+      setTitle('')
+      setPublished('')
+      setAuthor('')
+      setGenres([])
+      setGenre('')
+    } catch (error) {
+      console.error('Submit failed:', error)
+    }
   }
 
   const addGenre = () => {

@@ -33,6 +33,7 @@ const YearForm = () => {
 
       <form onSubmit={submit}>
         <select value={name} onChange={({ target }) => setName(target.value)}>
+          <option value="">-- select author --</option>
           {authors.map((a) => (
             <option key={a.name}>{a.name}</option>
           ))}
