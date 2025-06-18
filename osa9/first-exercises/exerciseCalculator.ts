@@ -10,7 +10,12 @@ interface Result {
   average: number;
 }
 
-const calculateExercises = (days: number[], target: number): Result => {
+export type ExerciseRequest = {
+  daily_exercises: number[];
+  target: number;
+};
+
+export const calculateExercises = (days: number[], target: number): Result => {
   const periodLength = days.length;
   const trainingDays = days.filter((day) => day > 0).length;
   const average = days.reduce((acc, x) => acc + x, 0) / periodLength;
@@ -48,14 +53,16 @@ const calculateExercises = (days: number[], target: number): Result => {
   return calculatedResult;
 };
 
-try {
-  const inputExercises = parseArguments(process.argv);
+if (require.main === module) {
+  try {
+    const inputExercises = parseArguments(process.argv);
 
-  console.log(calculateExercises(inputExercises.slice(1), inputExercises[0]));
-} catch (error: unknown) {
-  let errorMessage = "Something went wrong: ";
-  if (error instanceof Error) {
-    errorMessage += error.message;
+    console.log(calculateExercises(inputExercises.slice(1), inputExercises[0]));
+  } catch (error: unknown) {
+    let errorMessage = "Something went wrong: ";
+    if (error instanceof Error) {
+      errorMessage += error.message;
+    }
+    console.log(errorMessage);
   }
-  console.log(errorMessage);
 }
