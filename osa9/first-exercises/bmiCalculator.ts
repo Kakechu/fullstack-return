@@ -1,6 +1,9 @@
 import { parseArguments } from "./helper";
 
 const calculateBmi = (height: number, weight: number): string => {
+  if (height <= 0 || weight <= 0) {
+    throw new Error("Height and weight must be positive numbers.");
+  }
   const result = weight / Math.pow(height / 100, 2);
 
   switch (true) {
@@ -25,13 +28,17 @@ const calculateBmi = (height: number, weight: number): string => {
   }
 };
 
-try {
-  const parsed = parseArguments(process.argv);
-  console.log(calculateBmi(parsed[0], parsed[1]));
-} catch (error: unknown) {
-  let errorMessage = "Something went wrong: ";
-  if (error instanceof Error) {
-    errorMessage += error.message;
+if (require.main === module) {
+  try {
+    const parsed = parseArguments(process.argv);
+    console.log(calculateBmi(parsed[0], parsed[1]));
+  } catch (error: unknown) {
+    let errorMessage = "Something went wrong: ";
+    if (error instanceof Error) {
+      errorMessage += error.message;
+    }
+    console.log(errorMessage);
   }
-  console.log(errorMessage);
 }
+
+export default calculateBmi;
