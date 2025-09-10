@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import patients from "../../services/patients";
 import { useEffect, useState } from "react";
-import { Patient, Gender } from "../../types";
+import { Patient, Gender, Entry } from "../../types";
 import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
 import TransgenderIcon from "@mui/icons-material/Transgender";
@@ -32,6 +32,19 @@ const PatientDetailsPage = () => {
       </h1>
       <div>ssn: {patient.ssn}</div>
       <div>occupation: {patient.occupation}</div>
+      <h2>entries</h2>
+      {patient.entries.map((entry: Entry) => (
+        <div key={entry.id}>
+          <div>
+            {entry.date} <i>{entry.description}</i>
+          </div>
+          <ul>
+            {entry.diagnosisCodes?.map((code) => (
+              <li key={code}>{code}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
   );
 };
