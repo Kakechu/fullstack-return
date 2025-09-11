@@ -5,6 +5,11 @@ import { Patient, Gender, Entry, Diagnosis } from "../../types";
 import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
 import TransgenderIcon from "@mui/icons-material/Transgender";
+import EntryDetails from "./EntryDetails";
+import { Box, Button } from "@mui/material";
+import WorkIcon from "@mui/icons-material/Work";
+import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
+import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 
 interface Props {
   diagnoses: Diagnosis[];
@@ -38,10 +43,24 @@ const PatientDetailsPage = ({ diagnoses }: Props) => {
       <div>occupation: {patient.occupation}</div>
       <h2>entries</h2>
       {patient.entries.map((entry: Entry) => (
-        <div key={entry.id}>
+        <Box
+          key={entry.id}
+          border={2}
+          borderRadius={2}
+          padding={2}
+          marginBottom={2}
+        >
           <div>
-            {entry.date} <i>{entry.description}</i>
+            {entry.date}{" "}
+            {entry.type === "HealthCheck" && <MedicalServicesIcon />}
+            {entry.type === "OccupationalHealthcare" && (
+              <>
+                <WorkIcon /> {entry.employerName}
+              </>
+            )}
+            {entry.type === "Hospital" && <LocalHospitalIcon />}
           </div>
+          <i>{entry.description}</i>
           <ul>
             {entry.diagnosisCodes?.map((code) => (
               <li key={code}>
@@ -49,8 +68,13 @@ const PatientDetailsPage = ({ diagnoses }: Props) => {
               </li>
             ))}
           </ul>
-        </div>
+          <EntryDetails entry={entry} />
+          <div>diagnose by {entry.specialist}</div>
+        </Box>
       ))}
+      <Button variant="contained" color="primary">
+        ADD NEW ENTRY
+      </Button>
     </div>
   );
 };
