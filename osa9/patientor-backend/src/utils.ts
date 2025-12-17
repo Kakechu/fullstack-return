@@ -1,6 +1,13 @@
-import { NewPatient, Gender } from "./types";
+import {
+  NewPatient,
+  Gender,
+  HealthCheckRating,
+  Diagnosis,
+  NewEntry,
+} from "./types";
 import { z } from "zod";
 
+// Patient-related utils
 export const newPatientSchema = z.object({
   name: z.string(),
   dateOfBirth: z.string().date(),
@@ -11,4 +18,56 @@ export const newPatientSchema = z.object({
 
 export const toNewPatient = (object: unknown): NewPatient => {
   return newPatientSchema.parse(object);
+};
+
+// Entry-related schemas and utils
+export const dischargeSchema = z.object({
+  date: z.string(),
+  criteria: z.string(),
+});
+
+export const baseNewEntrySchema = z.object({
+  description: z.string(),
+  date: z.string(),
+  specialist: z.string(),
+  diagnosisCodes: z.array(z.string()).optional(),
+});
+
+export const healthCheckEntrySchema = baseNewEntrySchema.extend({
+  type: z.literal("HealthCheck"),
+  healthCheckRating: z.nativeEnum(HealthCheckRating),
+});
+
+export const hospitalEntrySchema = baseNewEntrySchema.extend({
+  type: z.literal("Hospital"),
+  discharge: dischargeSchema,
+});
+
+export const occupationalHealthcareEntrySchema = baseNewEntrySchema.extend({
+  type: z.literal("OccupationalHealthcare"),
+  employerName: z.string(),
+  sickLeave: z
+    .object({ startDate: z.string(), endDate: z.string() })
+    .optional(),
+});
+
+export const entrySchema = z.union([
+  healthCheckEntrySchema,
+  hospitalEntrySchema,
+  occupationalHealthcareEntrySchema,
+]);
+
+export const toNewEntry = (object: unknown): NewEntry => {
+  return entrySchema.parse(object);
+};
+
+export const parseDiagnosisCodes = (
+  object: unknown
+): Array<Diagnosis["code"]> => {
+  if (!object || typeof object !== "object" || !("diagnosisCodes" in object)) {
+    // we will just trust the data to be in correct form
+    return [] as Array<Diagnosis["code"]>;
+  }
+
+  return object.diagnosisCodes as Array<Diagnosis["code"]>;
 };
