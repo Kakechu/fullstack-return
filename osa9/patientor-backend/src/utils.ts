@@ -27,9 +27,9 @@ export const dischargeSchema = z.object({
 });
 
 export const baseNewEntrySchema = z.object({
-  description: z.string(),
-  date: z.string(),
-  specialist: z.string(),
+  description: z.string().min(1),
+  date: z.string().min(1),
+  specialist: z.string().min(1),
   diagnosisCodes: z.array(z.string()).optional(),
 });
 

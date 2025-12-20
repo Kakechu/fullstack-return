@@ -19,7 +19,14 @@ const errorMiddleware = (
   next: NextFunction
 ) => {
   if (error instanceof z.ZodError) {
-    res.status(400).send({ error: error.issues });
+    const messages = error.issues.map((i) => {
+      const path = i.path.join(".");
+      console.log(error.issues);
+
+      return `Value of ${path} incorrect`;
+    });
+
+    res.status(400).send(messages.join(", "));
   } else {
     next(error);
   }
@@ -52,12 +59,20 @@ router.post(
 
 router.post(
   "/:id/entries",
-  (req: Request<{ id: string }, unknown, NewEntry>, res: Response<Entry>) => {
-    const patientId = req.params.id;
-    const entryToAdd = toNewEntry(req.body);
-    entryToAdd.diagnosisCodes = parseDiagnosisCodes(req.body);
-    const addedEntry = patientService.addEntry(patientId, entryToAdd);
-    res.json(addedEntry);
+  (
+    req: Request<{ id: string }, unknown, NewEntry>,
+    res: Response<Entry>,
+    next: NextFunction
+  ) => {
+    try {
+      const patientId = req.params.id;
+      const entryToAdd = toNewEntry(req.body);
+      entryToAdd.diagnosisCodes = parseDiagnosisCodes(req.body);
+      const addedEntry = patientService.addEntry(patientId, entryToAdd);
+      res.json(addedEntry);
+    } catch (e: unknown) {
+      next(e);
+    }
   }
 );
 
