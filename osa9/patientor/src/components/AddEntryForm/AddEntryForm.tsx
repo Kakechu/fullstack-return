@@ -14,19 +14,22 @@ import {
   EntryType,
   HealthCheckRating,
   HealthCheckRatingString,
+  Diagnosis,
 } from "../../types";
+import MultipleSelectCheckmarks from "./MultipleSelect";
 
 type Props = {
   entryType: EntryType;
   onSubmit: (values: NewEntry) => Promise<void>;
   onCancel: () => void;
+  diagnoses: Diagnosis[];
 };
 
-const AddEntryForm = ({ entryType, onSubmit, onCancel }: Props) => {
+const AddEntryForm = ({ entryType, onSubmit, onCancel, diagnoses }: Props) => {
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
   const [specialist, setSpecialist] = useState("");
-  const [diagnosisCodes, setdiagnosisCodes] = useState("");
+  const [selectedCodes, setSelectedCodes] = useState<string[]>([]);
   const [healthCheckRating, setHealthCheckRating] =
     useState<HealthCheckRatingString>(HealthCheckRatingString.Healthy);
   const [dischargeDate, setDischargeDate] = useState("");
@@ -67,7 +70,7 @@ const AddEntryForm = ({ entryType, onSubmit, onCancel }: Props) => {
       description,
       date,
       specialist,
-      diagnosisCodes: handleDiagnosisCodes(),
+      diagnosisCodes: selectedCodes,
     };
 
     let entryToAdd: NewEntry;
@@ -121,10 +124,6 @@ const AddEntryForm = ({ entryType, onSubmit, onCancel }: Props) => {
     await onSubmit(entryToAdd);
   };
 
-  const handleDiagnosisCodes = () => {
-    return diagnosisCodes.split(",").map((code) => code.trim());
-  };
-
   return (
     <Box
       border={2}
@@ -151,14 +150,22 @@ const AddEntryForm = ({ entryType, onSubmit, onCancel }: Props) => {
             value={description}
             onChange={({ target }) => setDescription(target.value)}
           />
+          <InputLabel style={{ marginTop: 20 }}>Date *</InputLabel>
           <TextField
-            label="Date"
+            type="date"
             fullWidth
             variant="standard"
             required
             value={date}
-            onChange={({ target }) => setDate(target.value)}
+            InputProps={{
+              readOnly: true,
+            }}
           />
+          <input
+            type="date"
+            onChange={({ target }) => setDate(target.value)}
+          ></input>
+
           <TextField
             label="Specialist"
             fullWidth
@@ -167,12 +174,10 @@ const AddEntryForm = ({ entryType, onSubmit, onCancel }: Props) => {
             value={specialist}
             onChange={({ target }) => setSpecialist(target.value)}
           />
-          <TextField
-            label="Diagnosis codes"
-            fullWidth
-            variant="standard"
-            value={diagnosisCodes}
-            onChange={({ target }) => setdiagnosisCodes(target.value)}
+          <MultipleSelectCheckmarks
+            diagnoses={diagnoses}
+            selectedCodes={selectedCodes}
+            onChange={setSelectedCodes}
           />
           {/* Health Check-Specific fields */}
           {entryType === EntryType.HealthCheck && (
@@ -198,16 +203,25 @@ const AddEntryForm = ({ entryType, onSubmit, onCancel }: Props) => {
           {entryType === EntryType.Hospital && (
             <div>
               {" "}
-              <InputLabel style={{ marginTop: 20 }}>Sickleave</InputLabel>
+              <InputLabel style={{ marginTop: 20 }}>Discharge</InputLabel>
+              <InputLabel style={{ marginTop: 20, marginLeft: 16 }}>
+                Date
+              </InputLabel>
               <TextField
-                label="Date"
+                type="date"
                 fullWidth
                 variant="standard"
                 required
                 value={dischargeDate}
-                onChange={({ target }) => setDischargeDate(target.value)}
+                InputProps={{
+                  readOnly: true,
+                }}
                 style={{ marginLeft: 16 }}
               />
+              <input
+                type="date"
+                onChange={({ target }) => setDischargeDate(target.value)}
+              ></input>
               <TextField
                 label="Criteria"
                 fullWidth
@@ -232,22 +246,44 @@ const AddEntryForm = ({ entryType, onSubmit, onCancel }: Props) => {
                 onChange={({ target }) => setEmployerName(target.value)}
               />
               <InputLabel style={{ marginTop: 20 }}>Sickleave</InputLabel>
+              <InputLabel style={{ marginTop: 20, marginLeft: 16 }}>
+                Start
+              </InputLabel>
               <TextField
-                label="Start Date"
+                type="date"
                 fullWidth
                 variant="standard"
+                required
                 value={sickLeaveStart}
+                InputProps={{
+                  readOnly: true,
+                }}
+                style={{ marginLeft: 16 }}
+              />
+              <input
+                type="date"
                 onChange={({ target }) => setSickLeaveStart(target.value)}
                 style={{ marginLeft: 16 }}
-              />
+              ></input>
+              <InputLabel style={{ marginTop: 20, marginLeft: 16 }}>
+                End
+              </InputLabel>
               <TextField
-                label="End Date"
+                type="date"
                 fullWidth
                 variant="standard"
+                required
                 value={sickLeaveEnd}
-                onChange={({ target }) => setSickLeaveEnd(target.value)}
+                InputProps={{
+                  readOnly: true,
+                }}
                 style={{ marginLeft: 16 }}
               />
+              <input
+                type="date"
+                onChange={({ target }) => setSickLeaveEnd(target.value)}
+                style={{ marginLeft: 16 }}
+              ></input>
             </div>
           )}
           <Grid>

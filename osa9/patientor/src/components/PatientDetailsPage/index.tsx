@@ -114,6 +114,7 @@ const PatientDetailsPage = ({ diagnoses }: Props) => {
           entryType={entryType}
           onSubmit={submitNewEntry}
           onCancel={onCancel}
+          diagnoses={diagnoses}
         />
       )}
       <h2>entries</h2>
