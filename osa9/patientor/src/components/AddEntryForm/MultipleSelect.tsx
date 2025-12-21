@@ -33,10 +33,7 @@ export default function MultipleSelectCheckmarks({
     const {
       target: { value },
     } = event;
-    onChange(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
+    onChange(typeof value === "string" ? value.split(",") : value);
   };
 
   const diagnosisCodes = diagnoses.map((d) => d.code);
